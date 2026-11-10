@@ -60,7 +60,8 @@ On a Ryzen AI Max+ 395 with a CPU-only build, Q4_K_M takes about 0.45 s for a 3 
 | File | Size | Use |
 |---|---:|---|
 | `Qwen3-ASR-1.7B-Cantonese-HK.Q4_K_M.gguf` | 1.1 GB | default, fastest |
-| `Qwen3-ASR-1.7B-Cantonese-HK-Q8_0.gguf` | 1.8 GB | slightly more accurate |
+| `Qwen3-ASR-1.7B-Cantonese-HK.Q6_K.gguf` | 1.4 GB | as accurate as Q8_0 in our check, 400 MB smaller |
+| `Qwen3-ASR-1.7B-Cantonese-HK-Q8_0.gguf` | 1.8 GB | largest |
 | `Qwen3-ASR-1.7B-Cantonese-HK.mmproj-Q8_0.gguf` | 356 MB | audio encoder, needed with either |
 
 SHA-256 values are in the [model card](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF).
