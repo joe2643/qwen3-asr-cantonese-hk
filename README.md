@@ -147,10 +147,15 @@ pin a revision if you need v1. `Q6_K`, `FP8`, `NVFP4`, and the `comfyui/` single
 - Clips up to about 30 seconds were tested. Split longer recordings first.
 - Output has punctuation but no timestamps.
 
+## Used by
+
+- [OraType](https://github.com/sennett-lau/oratype): free, open-source voice typing for macOS. It ships the GGUF
+  `Q6_K` (v2) with the `mmproj-Q8_0` encoder as its built-in speech model for Cantonese.
+
 ## Credits
 
 - Fine-tuning, quantization, and GGUF export: [@joe2643](https://github.com/joe2643)
-- Testing and [OraType](https://github.com/sennett-lau/oratype) integration: [@sennett-lau](https://github.com/sennett-lau)
+- Fine-tuning strategy, data collection direction: [@sennett-lau](https://github.com/sennett-lau)
 
 Base model: [Qwen3-ASR](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) by the Qwen team (Apache-2.0).
 
