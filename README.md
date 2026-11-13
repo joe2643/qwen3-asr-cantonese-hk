@@ -10,9 +10,8 @@ code-switching**. It writes Hong Kong Traditional Chinese with the characters pe
 they speak (`係`, `喺`, `嘅`, `咗`, `㗎`, `撚`, `屌`), keeps English words in English, and avoids the Simplified or
 Mainland-style output of the stock model.
 
-- **1.7B**: the most accurate. Use it on a desktop or server.
-- **0.6B**: about one-third the size. It was also trained on short voice commands (`閂燈`, `開燈`, `閂冷氣`) and on
-  hotword context that it uses when relevant and does not copy when not.
+- **1.7B (v2.1)**: the most accurate. Use it on a desktop or server; v2.1 also supports short voice commands (`閂燈`, `開燈`, `閂冷氣`) and hotword context biasing without prompt parroting.
+- **0.6B**: about one-third the size. Also trained on short voice commands and hotword context biasing for lightweight / edge deployment.
 
 ## Available weights & quantizations
 
@@ -32,18 +31,26 @@ converted to Simplified (OpenCC `t2s`), numbers are normalised and spaces remove
 
 ### 1.7B
 
-| Test set | Stock `Qwen3-ASR-1.7B` | v1 | **v2 (current)** | `whisper-large-v3` |
-|---|---:|---:|---:|---:|
-| FLEURS (`yue_hant_hk`) | 4.20% | 4.00% | **3.95%** | 20.97% |
-| Common Voice `yue` | 5.46% | **3.80%** | 3.86% | 36.44% |
-| Common Voice 23 `zh-HK` | 7.65% | 5.18% | **5.09%** | 41.76% |
-| MDCC | 4.25% | 2.53% | **2.49%** | 34.52% |
-| LegCo (HK Legislative Council) | 7.22% | 7.17% | **7.16%** | 32.15% |
-| MCE (Cantonese–English code-switching) | 11.74% | **5.61%** | 5.62% | 24.00% |
+| Test set | Stock `Qwen3-ASR-1.7B` | v1 | v2 | **v2.1 (current)** | `whisper-large-v3` |
+|---|---:|---:|---:|---:|---:|
+| FLEURS (`yue_hant_hk`) | 4.20% | 4.00% | 3.95% | **3.89%** | 20.97% |
+| Common Voice `yue` | 5.46% | **3.80%** | 3.86% | 3.94% | 36.44% |
+| Common Voice 23 `zh-HK` | 7.65% | 5.18% | 5.09% | **5.02%** | 41.76% |
+| MDCC | 4.25% | 2.53% | 2.49% | **2.47%** | 34.52% |
+| LegCo (HK Legislative Council) | 7.22% | 7.17% | **7.16%** | **7.16%** | 32.15% |
+| MCE (Cantonese–English code-switching) | 11.74% | 5.61% | 5.62% | **5.52%** | 24.00% |
+
+Hotword context, 210-clip stress suite (70 clips per condition):
+
+| Condition | 1.7B v2 CER | **1.7B v2.1 CER** | v2.1 Parrot rate |
+|---|---:|---:|---:|
+| Relevant hotwords + homophone distractors | 7.50% | **6.54%** | **0.0%** |
+| Only irrelevant hotwords | 10.14% | **10.02%** | **0.0%** |
+| Very short audio + long hotword list | 21.88% | **7.19%** | **0.0%** |
 
 #### 1.7B quantized variants
 
-- **GGUF (`llama-server`, 60-clip check without number normalisation):** `Q4_K_M` 4.04%, `Q6_K` 2.95%, `Q8_0` 3.01%.
+- **GGUF v2.1 (`llama-server`, 60-clip check without number normalisation):** `Q4_K_M` **2.59%**, `Q6_K` **2.89%**, `Q8_0` **2.89%**.
 - **vLLM (`qwen-asr[vllm]` 0.0.6 on RTX 4090, FLEURS `yue_hant_hk` 819 clips / 2.65 h audio):**
 
 | Variant | Weights | FLEURS CER | Batch time (2.65 h audio) | Single-clip p50 |
@@ -126,7 +133,7 @@ file names. `Q4_K_M` with its `mmproj` is about 611 MB in total.
 
 SHA-256 values are in the [0.6B GGUF model card](https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK-GGUF).
 
-#### Hotwords (0.6B)
+#### Hotwords (1.7B v2.1 & 0.6B)
 
 Put a comma-separated hotword list in a `system` message:
 
@@ -157,7 +164,7 @@ asr = Qwen3ASRModel.from_pretrained(
 print(asr.transcribe(audio="sample.wav", language="Cantonese")[0].text)
 ```
 
-For the 0.6B model, use `"joe2643/Qwen3-ASR-0.6B-Cantonese-HK"`. To give it hotwords, pass `context`:
+For the 0.6B model, use `"joe2643/Qwen3-ASR-0.6B-Cantonese-HK"`. Both 1.7B (v2.1) and 0.6B accept hotwords via `context`:
 
 ```python
 print(asr.transcribe(audio="command.wav", language="Cantonese", context="閂燈, 開燈, 閂冷氣, 較細聲啲")[0].text)
@@ -200,11 +207,11 @@ normalise numbers, so sets whose references contain digits score a little higher
 
 | Version | Date | BF16 revision | GGUF revision | FP8 / NVFP4 |
 |---|---|---|---|---|
-| **v2 (current)** | 2026-11-10 | `main` | `main` | `main` |
+| **v2.1 (current)** | 2026-11-14 | `main` | `main` | — |
+| v2 | 2026-11-10 | [`5c1df898`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK/tree/5c1df898) | [`b1c3dc91`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF/tree/b1c3dc91) | `main` |
 | v1 | 2026-11-07 | [`399c5ef`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK/tree/399c5ef) | [`1afe540`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF/tree/1afe540def044173f7412dc72584f803b92bfa96) | — |
 
-v2 is a second fine-tuning stage on top of v1. `Q4_K_M`, `Q8_0` and `mmproj` keep their file names across versions, so
-pin a revision if you need v1. `Q6_K`, `FP8`, `NVFP4`, and the `comfyui/` single-file checkpoint exist for v2.
+v2.1 adds context / hotword vocabulary alignment on top of v2 (`21.88% -> 7.19%` CER on short commands with long glossaries, `0.0%` parroting) and includes updated BF16, `comfyui/` single-file, and GGUF (`Q4_K_M`, `Q6_K`, `Q8_0`, `mmproj-Q8_0`) weights. Pin the revision above if you need v2 or v1.
 
 The table above is for 1.7B. The 0.6B model has one version so far, released 2026-11-13 (BF16 and GGUF, `main`).
 
