@@ -1,5 +1,9 @@
 # Qwen3-ASR-1.7B Cantonese (Hong Kong)
 
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-blue)](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/joe2643)
+
 A fine-tune of [`Qwen/Qwen3-ASR-1.7B`](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) for **Hong Kong colloquial Cantonese
 with English code-switching**. It writes Hong Kong Traditional Chinese with the characters people actually use when
 they speak (`係`, `喺`, `嘅`, `咗`, `㗎`, `撚`, `屌`), keeps English words in English, and avoids the Simplified or
@@ -151,6 +155,10 @@ pin a revision if you need v1. `Q6_K`, `FP8`, `NVFP4`, and the `comfyui/` single
 
 - [OraType](https://github.com/sennett-lau/oratype): free, open-source voice typing for macOS. It ships the GGUF
   `Q6_K` (v2) with the `mmproj-Q8_0` encoder as its built-in speech model for Cantonese.
+
+## Support
+
+If these Cantonese models save you time or GPU budget, consider buying a coffee to help fund future open-source Cantonese speech training runs: **[buymeacoffee.com/joe2643](https://buymeacoffee.com/joe2643)** ☕
 
 ## Credits
 
