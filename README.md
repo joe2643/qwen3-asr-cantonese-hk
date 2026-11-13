@@ -2,7 +2,7 @@
 
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-blue)](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/joe2643)
+[![Buy Me a Lemon Tea](https://img.shields.io/badge/%F0%9F%8D%8B%20Buy%20Me%20a%20Lemon%20Tea-ffdd00)](https://buymeacoffee.com/joe2643)
 
 A fine-tune of [`Qwen/Qwen3-ASR-1.7B`](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) for **Hong Kong colloquial Cantonese
 with English code-switching**. It writes Hong Kong Traditional Chinese with the characters people actually use when
@@ -158,7 +158,7 @@ pin a revision if you need v1. `Q6_K`, `FP8`, `NVFP4`, and the `comfyui/` single
 
 ## Support
 
-If these Cantonese models save you time or GPU budget, consider buying a coffee to help fund future open-source Cantonese speech training runs: **[buymeacoffee.com/joe2643](https://buymeacoffee.com/joe2643)** ☕
+If these Cantonese models save you time or GPU budget, consider buying me a lemon tea (請飲杯檸檬茶) to help fund future open-source Cantonese speech training runs: **[buymeacoffee.com/joe2643](https://buymeacoffee.com/joe2643)** 🍋
 
 ## Credits
 
