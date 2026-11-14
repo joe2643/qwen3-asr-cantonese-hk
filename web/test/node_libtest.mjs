@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { logMel, decodeTokens, splitChunks } from "../hkasr-lib.js";
-const M = "./models/yue-0.6b-int8/";
+// mel_filters.bin + tokenizer_config.json are in test/model-small/; vocab.json comes from the Hugging Face model repo
+const M = process.env.HKASR_MODEL_DIR || "./test/model-small/";
 const fb = new Float32Array(fs.readFileSync(M + "mel_filters.bin").buffer.slice(0));
 // read float32 wav (WAV FLOAT, 16k mono): find "data" chunk
 const buf = fs.readFileSync("./test/wav/00.wav");

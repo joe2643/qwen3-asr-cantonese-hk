@@ -1,0 +1,85 @@
+name: web
+
+on:
+  pull_request:
+    paths: ["web/**", ".github/workflows/web.yml"]
+  push:
+    branches: [main]
+    paths: ["web/**", ".github/workflows/web.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: ./build.sh
+      - name: Syntax check
+        run: for f in app.js asr-worker.js hkasr-lib.js deploy/worker.js test/node_libtest.mjs; do node --check "$f"; done
+      - name: Node test (log-mel, tokenizer decode, chunking)
+        run: |
+          curl -sfL --retry 3 -o test/model-small/vocab.json \
+            https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK/resolve/main/vocab.json
+          node test/node_libtest.mjs | tee "$RUNNER_TEMP/libtest.txt"
+          grep -q "tokenizer decode match 20 / 20" "$RUNNER_TEMP/libtest.txt"
+          python3 - "$RUNNER_TEMP/libtest.txt" <<'PY'
+          import re, sys
+          m = re.search(r"maxdiff ([0-9.eE+-]+)", open(sys.argv[1]).read())
+          assert m and float(m.group(1)) < 1e-4, "log-mel differs from the Python reference"
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: web/dist
+          retention-days: 7
+
+  deploy:
+    needs: check
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://hkasr.joe2643.work
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: web/dist
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: wrangler deploy
+        working-directory: web/deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4.151.2 deploy -c wrangler.jsonc
+      - name: Smoke test
+        # Cloudflare bot protection may challenge runner IPs; a 403 here is only a warning.
+        run: |
+          sleep 5
+          h=$(curl -sI -A hkasr-ci https://hkasr.joe2643.work/)
+          echo "$h" | head -1
+          if echo "$h" | head -1 | grep -q " 200"; then
+            echo "$h" | grep -qi "cross-origin-embedder-policy: require-corp" || { echo "COEP header missing"; exit 1; }
+          else
+            echo "::warning::smoke test could not reach the site from the runner"
+          fi

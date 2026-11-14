@@ -31,13 +31,19 @@ python3 serve.py 18096 --remote https://hkasr.joe2643.work
 `--remote` streams the model files and the ORT `.wasm` from the live site, so UI work does not need the model package.
 Self test: `/?selftest=20`, or `/?selftest=5&backend=wasm`.
 
-Node check of `hkasr-lib.js` (log-mel vs Python, tokenizer decode, chunking) needs three small model files:
+Node check of `hkasr-lib.js` (log-mel vs Python, tokenizer decode, chunking); `vocab.json` (2.7 MB) is fetched from Hugging Face:
 
 ```bash
-M=models/yue-0.6b-int8; mkdir -p $M
-for f in mel_filters.bin vocab.json tokenizer_config.json; do curl -sfA hkasr-dev -o $M/$f https://hkasr.joe2643.work/$M/$f; done
+curl -sfL -o test/model-small/vocab.json https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK/resolve/main/vocab.json
 node test/node_libtest.mjs     # expect: mel maxdiff ~2e-5, tokenizer decode match 20 / 20
 ```
+
+## CI / deploy
+
+`.github/workflows/web.yml`: every PR and push that touches `web/` runs `npm ci`, `build.sh`, `node --check` and the Node test.
+A push to `main` then deploys `dist/` + `deploy/worker.js` with `wrangler deploy -c deploy/wrangler.jsonc`.
+The deploy job uses the `production` environment, so it waits for a maintainer to approve it.
+Model files in R2 are never touched by CI.
 
 Notes:
 - Outside localhost the page must be served over HTTPS (WebGPU and the Cache API need a secure context).
