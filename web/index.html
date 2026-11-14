@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>廣東話語音轉文字 · 瀏覽器本機運行</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%A6%80%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <div>
+      <h1>廣東話語音轉文字</h1>
+      <p class="sub">Qwen3-ASR 0.6B 港式粵語微調版 · 全程喺你部機運行，段聲<strong>唔會上傳</strong></p>
+    </div>
+    <span id="badge" class="badge idle">未載入</span>
+  </header>
+
+  <section class="card" id="loadCard">
+    <div class="row">
+      <label class="field">模型
+        <select id="model"></select>
+      </label>
+      <label class="field">運算後端
+        <select id="backend">
+          <option value="auto">自動（有 WebGPU 用 GPU，冇就用 CPU）</option>
+          <option value="wasm">只用 CPU（WASM）</option>
+        </select>
+      </label>
+      <button id="loadBtn" class="primary">載入模型</button>
+    </div>
+    <div class="progress" id="prog" hidden><div class="bar" id="bar"></div></div>
+    <p class="hint" id="loadMsg">模型載入後會存喺瀏覽器 cache，下次開唔使再下載。建議用桌面版 Chrome / Edge。</p>
+  </section>
+
+  <section class="card" id="inputCard" aria-disabled="true">
+    <div class="drop" id="drop">
+      <p><strong>拖個音頻／影片檔入嚟</strong>，或者</p>
+      <div class="row center">
+        <label class="btn" for="file">揀檔案</label>
+        <input type="file" id="file" accept="audio/*,video/*" hidden>
+        <button id="recBtn" class="btn">🎙️ 錄音</button>
+        <span id="recTime" class="mono" hidden>00:00</span>
+      </div>
+      <p class="hint">支援 wav / mp3 / m4a / ogg / webm / mp4 等瀏覽器識解碼嘅格式。長過 30 秒會自動分段。</p>
+    </div>
+  </section>
+
+  <section class="card" id="outCard" hidden>
+    <div class="row between">
+      <h2 id="outTitle">結果</h2>
+      <button id="copyBtn" class="btn small">複製</button>
+    </div>
+    <div id="out" class="out" aria-live="polite"></div>
+    <p id="stats" class="stats mono"></p>
+  </section>
+
+  <section class="card" id="histCard" hidden>
+    <h2>之前轉過</h2>
+    <ol id="hist" class="hist"></ol>
+  </section>
+
+  <section class="card" id="testCard" hidden>
+    <h2>自我測試（FLEURS yue 20 段）</h2>
+    <p id="testSummary" class="mono"></p>
+    <table id="testTable"><thead><tr><th>#</th><th>同 Python 一致</th><th>CER</th><th>RTF</th><th>輸出</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="card links" id="linksCard">
+    <h2>相關項目</h2>
+    <ul class="linklist">
+      <li><a href="https://github.com/joe2643/qwen3-asr-cantonese-hk" target="_blank" rel="noopener">joe2643/qwen3-asr-cantonese-hk</a>
+        <span class="hint">港式粵語 Qwen3-ASR 微調模型：GGUF（llama.cpp）、快速上手、benchmark</span></li>
+      <li><a href="https://github.com/sennett-lau/oratype" target="_blank" rel="noopener">sennett-lau/oratype</a>
+        <span class="hint">OraType：免費開源 macOS 語音輸入，任何 app 講完就出字，可以喺本機或者自己 server 運行</span></li>
+      <li><span>Hugging Face 模型：<a href="https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK" target="_blank" rel="noopener">0.6B</a> · <a href="https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK" target="_blank" rel="noopener">1.7B</a></span></li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    模型：joe2643/Qwen3-ASR-0.6B-Cantonese-HK（int8 ONNX）· 推理：onnxruntime-web 1.31 · 唔會收集任何數據<br>
+    <a href="https://github.com/joe2643/qwen3-asr-cantonese-hk" target="_blank" rel="noopener">ASR repo</a> ·
+    <a href="https://github.com/sennett-lau/oratype" target="_blank" rel="noopener">OraType</a>
+  </footer>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
