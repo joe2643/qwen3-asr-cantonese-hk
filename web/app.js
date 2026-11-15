@@ -1,11 +1,13 @@
 const $ = (id) => document.getElementById(id);
 const worker = new Worker(new URL("./asr-worker.js", import.meta.url), { type: "module" });
 let ready = false, busy = false, seq = 0;
+const qs = new URLSearchParams(location.search);
 const pending = new Map();
 const hist = [];
 window.__hkasr = { log: [] };
 
 function badge(cls, txt) { const b = $("badge"); b.className = "badge " + cls; b.textContent = txt; }
+function step(n, state) { const el = $("step" + n); if (el) el.dataset.state = state; }
 const fmtMB = (b) => (b / 1048576).toFixed(0) + " MB";
 
 worker.onmessage = (e) => {
@@ -22,6 +24,7 @@ worker.onmessage = (e) => {
     badge("ok", "已載入 · " + be);
     $("loadMsg").textContent = `模型準備好（${m.loadSec.toFixed(1)} 秒）。後端：${be}`;
     $("inputCard").removeAttribute("aria-disabled");
+    step(1, "done"); step(2, "active");
     $("loadBtn").disabled = true; $("loadBtn").textContent = "模型已載入"; $("backend").disabled = true;
     window.__hkasr.ready = m;
     pending.get("init")?.resolve(m); pending.delete("init");
@@ -55,7 +58,14 @@ async function loadModel() {
     worker.postMessage({ type: "init", prefer: $("backend").value, modelDir: m.dir, modelId: m.id });
   });
 }
-$("loadBtn").onclick = () => loadModel().catch(() => {});
+$("loadBtn").onclick = () => {
+  if (device.mobile && !mobileAck) { // nudge mobile users to a computer before a 1.2 GB download
+    const n = $("mobileNotice"); n.hidden = false; n.classList.remove("shake"); void n.offsetWidth; n.classList.add("shake");
+    n.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  loadModel().catch(() => {});
+};
 
 async function decodeToMono16k(arrayBuf) {
   const ctx = new AudioContext({ sampleRate: 16000 });
@@ -78,7 +88,7 @@ function runWorker(type, wav, onPartial) {
 async function transcribeBuffer(arrayBuf, label) {
   if (!ready || busy) return;
   busy = true; badge("busy", "轉緊…");
-  $("outCard").hidden = false; $("outTitle").textContent = label;
+  $("outCard").hidden = false; $("outTitle").textContent = label; step(3, "active");
   const out = $("out"); out.textContent = ""; out.classList.add("streaming"); $("stats").textContent = "解碼音頻中…";
   try {
     const wav = await decodeToMono16k(arrayBuf);
@@ -89,6 +99,8 @@ async function transcribeBuffer(arrayBuf, label) {
       if (p.nChunks > 1) $("stats").textContent = `音頻 ${dur.toFixed(1)} 秒 · 第 ${p.chunk}/${p.nChunks} 段`;
     });
     out.textContent = r.text || "（聽唔到嘢）";
+    step(2, "done"); step(3, "done");
+    if (!qs.get("selftest")) $("nudge").hidden = false;
     $("stats").textContent = `${r.backend === "webgpu" ? "WebGPU" : "WASM"} · 音頻 ${r.dur.toFixed(1)}s · 用時 ${r.sec.toFixed(2)}s · RTF ${r.rtf.toFixed(3)} · encoder ${r.encSec.toFixed(2)}s · decoder ${r.decSec.toFixed(2)}s（${r.tokPerSec.toFixed(1)} tok/s）`;
     hist.unshift({ label, text: r.text, stats: `${r.dur.toFixed(1)}s · RTF ${r.rtf.toFixed(3)}` });
     renderHist();
@@ -117,6 +129,11 @@ drop.ondragleave = () => drop.classList.remove("over");
 drop.ondrop = async (e) => { e.preventDefault(); drop.classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) await transcribeBuffer(await f.arrayBuffer(), f.name).catch(() => {}); };
 
 let rec = null, recChunks = [], recT0 = 0, recTimer = 0;
+function setRecUI(on) {
+  $("recBtn").classList.toggle("rec", on); $("recBtn").setAttribute("aria-label", on ? "停止並轉文字" : "錄音");
+  $("recLabel").textContent = on ? "錄緊…再撳一下停止並轉文字" : "撳一下開始錄音";
+  $("recTime").hidden = !on; if (on) $("recTime").textContent = "00:00";
+}
 $("recBtn").onclick = async () => {
   if (rec) { rec.stop(); return; }
   try {
@@ -125,16 +142,19 @@ $("recBtn").onclick = async () => {
     rec.ondataavailable = (e) => e.data.size && recChunks.push(e.data);
     rec.onstop = async () => {
       stream.getTracks().forEach((t) => t.stop()); clearInterval(recTimer);
-      $("recBtn").textContent = "🎙️ 錄音"; $("recBtn").classList.remove("rec"); $("recTime").hidden = true; rec = null;
+      setRecUI(false); rec = null;
       const blob = new Blob(recChunks, { type: recChunks[0]?.type || "audio/webm" });
       await transcribeBuffer(await blob.arrayBuffer(), "錄音 " + new Date().toLocaleTimeString("zh-HK")).catch(() => {});
     };
     rec.start(); recT0 = Date.now();
-    $("recBtn").textContent = "⏹ 停止並轉文字"; $("recBtn").classList.add("rec"); $("recTime").hidden = false;
+    setRecUI(true);
     recTimer = setInterval(() => { const s = Math.floor((Date.now() - recT0) / 1000); $("recTime").textContent = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; }, 250);
-  } catch (err) { $("stats").textContent = "開唔到咪：" + err.message; }
+  } catch (err) { $("outCard").hidden = false; $("stats").textContent = "開唔到咪：" + err.message; }
 };
-$("copyBtn").onclick = () => navigator.clipboard.writeText($("out").textContent);
+$("copyBtn").onclick = async () => {
+  try { await navigator.clipboard.writeText($("out").textContent); flash($("copyBtn"), "已複製 ✓"); } catch { flash($("copyBtn"), "複製唔到"); }
+};
+function flash(btn, txt) { const o = btn.dataset.label || btn.textContent; btn.dataset.label = o; btn.textContent = txt; setTimeout(() => (btn.textContent = o), 1600); }
 
 // ---------- self test (?selftest=1[&backend=wasm]) ----------
 const normCER = (s) => s.toLowerCase().replace(/[\p{P}\p{S}\s]/gu, "");
@@ -166,9 +186,114 @@ async function selftest(n) {
   window.__hkasr.selftest = res;
   return res;
 }
-const qs = new URLSearchParams(location.search);
 if (qs.get("backend")) $("backend").value = qs.get("backend");
 if (qs.get("selftest")) {
   loadModel().then(() => selftest(Number(qs.get("selftest")) > 1 ? Number(qs.get("selftest")) : 20))
     .catch((e) => { window.__hkasr.selftest = { error: String(e) }; });
 }
+
+// ---------- page: device check, mobile notice, promo bits ----------
+const ua = navigator.userAgent;
+const device = (() => {
+  const iPadOS = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+  const mobile = navigator.userAgentData?.mobile === true || /Android|iPhone|iPad|iPod|Mobile|HarmonyOS|Silk|Kindle/i.test(ua) || iPadOS;
+  const mac = !mobile && (navigator.userAgentData?.platform === "macOS" || /Macintosh|Mac OS X/.test(ua));
+  return { mobile, mac, webgpu: !!navigator.gpu, mem: navigator.deviceMemory, cores: navigator.hardwareConcurrency };
+})();
+let mobileAck = !!qs.get("selftest");
+window.__hkasr.device = device;
+
+{
+  const caps = [];
+  caps.push([device.mobile ? "手機／平板" : device.mac ? "Mac" : "電腦", device.mobile ? "bad" : "good"]);
+  caps.push([device.webgpu ? "WebGPU ✓" : "冇 WebGPU，會用 CPU", device.webgpu ? "good" : "bad"]);
+  if (device.cores) caps.push([`${device.cores} 核心`, ""]);
+  if (device.mem) caps.push([`記憶體 ${device.mem >= 8 ? "≥ 8" : device.mem} GB`, device.mem < 4 ? "bad" : ""]);
+  for (const [t, c] of caps) { const s = document.createElement("span"); s.className = "cap " + c; s.textContent = t; $("caps").appendChild(s); }
+  if (!device.webgpu && !device.mobile) $("loadMsg").textContent = "你嘅瀏覽器冇 WebGPU，會用 CPU 運行，會慢好多。建議用最新版 Chrome / Edge。";
+}
+
+if (device.mobile && !mobileAck) $("mobileNotice").hidden = false;
+$("mobileAnywayBtn").onclick = () => { mobileAck = true; $("mobileNotice").hidden = true; loadModel().catch(() => {}); };
+$("shareLinkBtn").onclick = async () => {
+  const url = location.origin + location.pathname;
+  try {
+    if (navigator.share) { await navigator.share({ title: "港語 ASR：廣東話語音轉文字", text: "用電腦開嚟試：", url }); return; }
+    await navigator.clipboard.writeText(url); flash($("shareLinkBtn"), "已複製網址 ✓");
+  } catch (e) { if (e?.name !== "AbortError") flash($("shareLinkBtn"), url); }
+};
+
+if (device.mac) { $("oraYou").hidden = false; $("oraYou").textContent = "● 你用緊 Mac：可以即刻裝嚟用"; }
+else if (device.mobile) { $("oraYou").hidden = false; $("oraYou").textContent = "● 返到 Mac 再開呢頁就裝得"; }
+
+// accuracy chart: 0.6B fine-tune vs 1.7B v2.1 (CER %, from the repo README)
+{
+  const rows = [
+    ["FLEURS", "yue_hant_hk", 5.70, 3.89], ["Common Voice", "yue", 5.12, 3.94], ["Common Voice 23", "zh-HK", 6.44, 5.02],
+    ["MDCC", "", 3.29, 2.47], ["MCE", "中英夾雜", 6.98, 5.52], ["LegCo", "立法會", 7.62, 7.16],
+  ];
+  const max = 8, host = $("chartRows");
+  for (const [name, sub, a, b] of rows) {
+    const d = document.createElement("div"); d.className = "crow"; d.setAttribute("role", "row");
+    d.innerHTML = `<div class="crow-name" role="rowheader"></div><div class="bars"><div class="b b6"></div><div class="b b17"></div></div><div class="crow-num" role="cell"></div>`;
+    d.querySelector(".crow-name").append(name, Object.assign(document.createElement("small"), { textContent: sub }));
+    d.querySelector(".crow-num").innerHTML = `${a.toFixed(2)}%<br><b>${b.toFixed(2)}%</b><br><span class="crow-delta">−${Math.round((1 - b / a) * 100)}%</span>`;
+    d.querySelector(".b6").dataset.w = (a / max) * 100; d.querySelector(".b17").dataset.w = (b / max) * 100;
+    host.appendChild(d);
+  }
+}
+
+// reveal on scroll (+ grow chart bars)
+{
+  const els = document.querySelectorAll(".section-head, .chart, .paths, .ora-inner, .model-grid, .faq details");
+  const grow = (root) => root.querySelectorAll(".b").forEach((b) => (b.style.width = b.dataset.w + "%"));
+  if (!("IntersectionObserver" in window)) { grow(document); }
+  else {
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return; e.target.classList.add("in"); grow(e.target); io.unobserve(e.target);
+    }), { threshold: 0.15 });
+    els.forEach((el) => { el.classList.add("reveal"); io.observe(el); });
+  }
+}
+
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function typeInto(el, text, cps = 14) {
+  el.textContent = "";
+  for (const ch of text) { el.textContent += ch; await sleep(1000 / cps + Math.random() * 40); }
+}
+
+// hero board: cycle example outputs
+(async () => {
+  if (reduceMotion) return;
+  const el = $("heroText");
+  const lines = [
+    "今日 send 咗個 proposal 俾 client，佢話聽日再覆。",
+    "我哋喺銅鑼灣等緊你，你到咗未呀？",
+    "呢個 bug 好奇怪，deploy 完之後先出現㗎。",
+    "閂冷氣，順便開埋客廳盞燈。",
+    "佢話個 meeting 改咗去禮拜五下晝三點。",
+  ];
+  await sleep(1400);
+  for (let i = 1; ; i = (i + 1) % lines.length) {
+    await sleep(2600);
+    el.classList.add("typing"); await typeInto(el, lines[i], 16); el.classList.remove("typing");
+  }
+})();
+
+// OraType window mock: pill listens, text lands in the compose box, message is sent
+(async () => {
+  const typed = $("macTyped"), pill = $("macPill"), bubble = $("macBubble");
+  const msg = "不如去旺角食火鍋？我 book 咗七點，你收工直接過嚟啦。";
+  if (reduceMotion) { bubble.hidden = false; bubble.textContent = msg; pill.classList.add("off"); return; }
+  for (;;) {
+    bubble.hidden = true; typed.textContent = ""; pill.classList.remove("off");
+    await sleep(2600);
+    pill.classList.add("off");
+    await sleep(250);
+    typed.textContent = msg; // OraType pastes the finished text in one go
+    await sleep(1300);
+    typed.textContent = ""; bubble.textContent = msg; bubble.hidden = false;
+    await sleep(3800);
+  }
+})();

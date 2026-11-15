@@ -2,88 +2,325 @@
 <html lang="zh-Hant-HK">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>廣東話語音轉文字 · 瀏覽器本機運行</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>港語 ASR · 廣東話語音轉文字（瀏覽器本機運行）</title>
+<meta name="description" content="港式粵語 + 中英夾雜語音轉文字。Qwen3-ASR 0.6B 港式粵語微調版，全程喺你部機運行，段聲唔會上傳。想要更準：1.7B 模型；Mac 用家：OraType。">
+<meta name="theme-color" content="#f3eee4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101412" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="港語 ASR · 講廣東話，即刻變文字">
+<meta property="og:description" content="港式粵語語音轉文字，全程喺瀏覽器運行，段聲唔會上傳。開源 Qwen3-ASR 港式粵語微調模型。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+HK:wght@700;900&display=swap">
 <link rel="stylesheet" href="style.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%A6%80%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23d42a20%22/%3E%3Ctext x=%2250%22 y=%2272%22 font-size=%2262%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22serif%22 font-weight=%22900%22%3E%E7%B2%B5%3C/text%3E%3C/svg%3E">
 </head>
 <body>
-<main class="wrap">
-  <header class="top">
-    <div>
-      <h1>廣東話語音轉文字</h1>
-      <p class="sub">Qwen3-ASR 0.6B 港式粵語微調版 · 全程喺你部機運行，段聲<strong>唔會上傳</strong></p>
-    </div>
-    <span id="badge" class="badge idle">未載入</span>
-  </header>
+<div class="grain" aria-hidden="true"></div>
 
-  <section class="card" id="loadCard">
-    <div class="row">
-      <label class="field">模型
-        <select id="model"></select>
-      </label>
-      <label class="field">運算後端
-        <select id="backend">
-          <option value="auto">自動（有 WebGPU 用 GPU，冇就用 CPU）</option>
-          <option value="wasm">只用 CPU（WASM）</option>
-        </select>
-      </label>
-      <button id="loadBtn" class="primary">載入模型</button>
-    </div>
-    <div class="progress" id="prog" hidden><div class="bar" id="bar"></div></div>
-    <p class="hint" id="loadMsg">模型載入後會存喺瀏覽器 cache，下次開唔使再下載。建議用桌面版 Chrome / Edge。</p>
-  </section>
+<header class="nav">
+  <a class="brand" href="#top" aria-label="港語 ASR">
+    <span class="brand-mark">粵</span>
+    <span class="brand-name">港語 ASR</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#demo">試用</a>
+    <a href="#accuracy">準確度</a>
+    <a href="#oratype">Mac App</a>
+    <a href="#models">模型</a>
+    <a class="nav-gh" href="https://github.com/joe2643/qwen3-asr-cantonese-hk" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
 
-  <section class="card" id="inputCard" aria-disabled="true">
-    <div class="drop" id="drop">
-      <p><strong>拖個音頻／影片檔入嚟</strong>，或者</p>
-      <div class="row center">
-        <label class="btn" for="file">揀檔案</label>
-        <input type="file" id="file" accept="audio/*,video/*" hidden>
-        <button id="recBtn" class="btn">🎙️ 錄音</button>
-        <span id="recTime" class="mono" hidden>00:00</span>
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="dot"></span>開源 · 港式粵語微調 · 中英夾雜</p>
+      <h1>講廣東話，<br><em>即刻</em>變文字。</h1>
+      <p class="lede">用你把聲試吓我哋嘅港式粵語語音模型。寫出嚟係香港人真係會用嘅字：<span class="kw">係</span><span class="kw">喺</span><span class="kw">嘅</span><span class="kw">咗</span><span class="kw">㗎</span>，英文照寫英文。</p>
+      <ul class="hero-points">
+        <li><b>全程本機運行</b>　段聲唔會上傳，唔使註冊</li>
+        <li><b>WebGPU 加速</b>　建議用電腦版 Chrome / Edge</li>
+      </ul>
+      <div class="hero-cta">
+        <a class="btn btn-red" href="#demo">即刻試 0.6B ↓</a>
+        <a class="btn btn-ghost" href="#oratype">Mac 日常用 → OraType</a>
       </div>
-      <p class="hint">支援 wav / mp3 / m4a / ogg / webm / mp4 等瀏覽器識解碼嘅格式。長過 30 秒會自動分段。</p>
+    </div>
+
+    <figure class="board" aria-label="示範：模型輸出">
+      <div class="board-top">
+        <span class="board-route">粵</span>
+        <span class="board-dest">FLEURS · CV · MDCC · MCE</span>
+        <span class="board-led" aria-hidden="true"></span>
+      </div>
+      <div class="board-screen">
+        <p class="board-label">轉錄中 / TRANSCRIBING</p>
+        <p class="board-text" id="heroText">今日 send 咗個 proposal 俾 client，佢話聽日再覆。</p>
+      </div>
+      <figcaption class="board-foot">
+        <span>1.7B v2.1 · FLEURS CER <b>3.89%</b></span>
+        <span>whisper-large-v3 <s>20.97%</s></span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="demo" id="demo">
+    <div class="section-head">
+      <p class="kicker">01 · 線上試用</p>
+      <h2>喺瀏覽器試 <span class="hl">0.6B</span></h2>
+      <p class="section-sub">第一次要下載約 1.2 GB 模型，之後會存喺瀏覽器 cache。網頁版係試食裝：細模型、int8 量化，速度同準確度都唔及桌面版。</p>
+    </div>
+
+    <!-- mobile warning (shown by app.js) -->
+    <aside class="notice" id="mobileNotice" hidden role="alert">
+      <div class="notice-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/><path d="M12 7v5"/><path d="M12 14.5v.01"/></svg>
+      </div>
+      <div class="notice-body">
+        <h3>你似乎用緊手機或者平板</h3>
+        <p>呢個 demo 要喺你部機度下載約 <b>1.2 GB</b> 模型再用 GPU 運行。大部分手機記憶體同 GPU 都頂唔順，可能會好慢、發熱，甚至令頁面閃退。<b>強烈建議用電腦（Chrome / Edge）開。</b></p>
+        <div class="notice-actions">
+          <button class="btn btn-ink" id="shareLinkBtn" type="button">複製網址，用電腦開</button>
+          <button class="btn btn-ghost" id="mobileAnywayBtn" type="button">我明白，照試</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="studio">
+      <!-- step rail -->
+      <ol class="steps" aria-label="步驟">
+        <li class="step" id="step1" data-state="active"><span class="step-n">1</span><span>載入模型</span></li>
+        <li class="step" id="step2"><span class="step-n">2</span><span>錄音／上傳</span></li>
+        <li class="step" id="step3"><span class="step-n">3</span><span>睇結果</span></li>
+      </ol>
+
+      <!-- step 1 -->
+      <div class="panel" id="loadCard">
+        <div class="panel-head">
+          <h3>載入模型</h3>
+          <span id="badge" class="badge idle">未載入</span>
+        </div>
+        <div class="caps" id="caps" aria-live="polite"></div>
+        <div class="load-row">
+          <label class="field">模型
+            <select id="model"></select>
+          </label>
+          <label class="field">運算後端
+            <select id="backend">
+              <option value="auto">自動（有 WebGPU 用 GPU）</option>
+              <option value="wasm">只用 CPU（WASM，較慢）</option>
+            </select>
+          </label>
+          <button id="loadBtn" class="btn btn-red btn-load" type="button">載入模型</button>
+        </div>
+        <div class="progress" id="prog" hidden><div class="bar" id="bar"></div></div>
+        <p class="hint" id="loadMsg">模型載入後會存喺瀏覽器 cache，下次開唔使再下載。</p>
+      </div>
+
+      <!-- step 2 -->
+      <div class="panel panel-input" id="inputCard" aria-disabled="true">
+        <div class="drop" id="drop">
+          <button id="recBtn" class="mic" type="button" aria-label="錄音">
+            <span class="mic-ring" aria-hidden="true"></span>
+            <svg class="mic-ico" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></svg>
+            <svg class="stop-ico" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5" fill="currentColor"/></svg>
+          </button>
+          <p class="mic-label"><span id="recLabel">撳一下開始錄音</span> <span id="recTime" class="mono" hidden>00:00</span></p>
+          <div class="or"><span>或者</span></div>
+          <p class="drop-copy"><label class="link-btn" for="file">揀音頻／影片檔</label>，或者直接拖入嚟呢度</p>
+          <input type="file" id="file" accept="audio/*,video/*" hidden>
+          <p class="hint">wav / mp3 / m4a / ogg / webm / mp4 都得。長過 30 秒會自動分段。</p>
+        </div>
+        <div class="tryline">試吓講：<span>「我啱啱 book 咗聽晚七點嘅枱」</span><span>「閂燈」</span><span>「呢個 project 下個禮拜 deadline」</span></div>
+      </div>
+
+      <!-- step 3 -->
+      <div class="panel panel-out" id="outCard" hidden>
+        <div class="panel-head">
+          <h3 id="outTitle">結果</h3>
+          <button id="copyBtn" class="btn btn-small" type="button">複製</button>
+        </div>
+        <div id="out" class="out" aria-live="polite"></div>
+        <p id="stats" class="stats mono"></p>
+      </div>
+
+      <!-- upsell shown after first transcript -->
+      <div class="nudge" id="nudge" hidden>
+        <div class="nudge-item">
+          <p class="nudge-k">覺得唔夠準？</p>
+          <p><b>1.7B</b> 喺大部分測試集錯字少 <b>兩至三成</b>，FLEURS 字錯率由 5.70% 降到 3.89%。</p>
+          <a href="#accuracy">比較準確度 →</a>
+        </div>
+        <div class="nudge-item">
+          <p class="nudge-k">用 Mac？</p>
+          <p><b>OraType</b> 內置 1.7B 港式粵語模型，任何 app 撳快捷鍵講完就出字，免費、離線。</p>
+          <a href="#oratype">睇吓 OraType →</a>
+        </div>
+      </div>
+
+      <div class="panel" id="histCard" hidden>
+        <h3>之前轉過</h3>
+        <ol id="hist" class="hist"></ol>
+      </div>
+
+      <div class="panel" id="testCard" hidden>
+        <h3>自我測試（FLEURS yue 20 段）</h3>
+        <p id="testSummary" class="mono"></p>
+        <div class="table-wrap">
+          <table id="testTable"><thead><tr><th>#</th><th>同 Python 一致</th><th>CER</th><th>RTF</th><th>輸出</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="card" id="outCard" hidden>
-    <div class="row between">
-      <h2 id="outTitle">結果</h2>
-      <button id="copyBtn" class="btn small">複製</button>
+  <!-- ============ ACCURACY ============ -->
+  <section class="accuracy" id="accuracy">
+    <div class="section-head">
+      <p class="kicker">02 · 想再準啲</p>
+      <h2>網頁係試食，<br>正餐係 <span class="hl">1.7B</span>。</h2>
+      <p class="section-sub">0.6B 細、快，啱放上網頁同邊緣裝置。要日常用、要準，用 1.7B：體積大約三倍，大部分測試集錯字少兩至三成，中英夾雜都穩陣啲。</p>
     </div>
-    <div id="out" class="out" aria-live="polite"></div>
-    <p id="stats" class="stats mono"></p>
+
+    <div class="chart" role="table" aria-label="字錯率 CER 比較，越低越好">
+      <div class="chart-legend" role="row">
+        <span role="columnheader" class="lg lg-06">0.6B 微調（呢個網頁）</span>
+        <span role="columnheader" class="lg lg-17">1.7B v2.1</span>
+        <span class="lg-note">字錯率 CER，越短越好</span>
+      </div>
+      <div id="chartRows"></div>
+      <p class="chart-foot">BF16 <code>transformers</code>、greedy decoding、強制粵語。網頁版用 int8 ONNX，結果可能有少少出入。完整 benchmark 喺 <a href="https://github.com/joe2643/qwen3-asr-cantonese-hk#benchmark" target="_blank" rel="noopener">GitHub</a>。</p>
+    </div>
+
+    <div class="paths">
+      <a class="path" href="https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF" target="_blank" rel="noopener">
+        <span class="path-k">桌面／伺服器</span>
+        <span class="path-t">1.7B GGUF · llama.cpp</span>
+        <span class="path-d">Q4_K_M 至 Q8_0，1.1–1.8 GB。Windows / Linux / Mac 都用得。</span>
+        <span class="path-go">Hugging Face ↗</span>
+      </a>
+      <a class="path" href="https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-NVFP4" target="_blank" rel="noopener">
+        <span class="path-k">NVIDIA GPU</span>
+        <span class="path-t">1.7B vLLM · FP8 / NVFP4</span>
+        <span class="path-d">單段 p50 0.13 秒，2.65 小時音頻 8.4 秒轉完。</span>
+        <span class="path-go">Hugging Face ↗</span>
+      </a>
+      <a class="path path-mac" href="#oratype">
+        <span class="path-k">Mac 日常輸入</span>
+        <span class="path-t">OraType 內置 1.7B</span>
+        <span class="path-d">唔使寫 code，裝完就用，任何 app 都打到字。</span>
+        <span class="path-go">睇吓 ↓</span>
+      </a>
+    </div>
   </section>
 
-  <section class="card" id="histCard" hidden>
-    <h2>之前轉過</h2>
-    <ol id="hist" class="hist"></ol>
+  <!-- ============ ORATYPE ============ -->
+  <section class="oratype" id="oratype">
+    <div class="ora-inner">
+      <div class="ora-copy">
+        <p class="kicker kicker-light">03 · Mac 用家</p>
+        <h2>唔好淨係試，<br><em>日日用</em>佢。</h2>
+        <p class="ora-lede"><b>OraType</b> 係免費開源嘅 macOS 語音輸入。喺任何 app 撳快捷鍵、講嘢，乾淨嘅文字就會打喺你個 cursor 度。內置我哋嘅 <b>1.7B 港式粵語模型</b>，全程喺你部 Mac 運行。</p>
+        <p class="ora-you" id="oraYou" hidden></p>
+        <ul class="ora-list">
+          <li><span>⌘</span>任何 app：WhatsApp、Slack、Gmail、Notes…</li>
+          <li><span>粵</span>港式粵語 + 中英夾雜，內置 1.7B（GGUF Q6_K）</li>
+          <li><span>✎</span>自動刪「呃、即係」、跟你改口、加標點</li>
+          <li><span>⇄</span>即講即譯，最多三種目標語言</li>
+          <li><span>◎</span>MIT 開源 · 免費 · 唔使帳戶 · 冇追蹤</li>
+        </ul>
+        <div class="ora-cta">
+          <a class="btn btn-white" href="https://github.com/sennett-lau/oratype/releases/latest" target="_blank" rel="noopener">下載 OraType for Mac ↓</a>
+          <a class="btn btn-line" href="https://oratype.sennettlau.me/" target="_blank" rel="noopener">官網 ↗</a>
+          <a class="btn btn-line" href="https://github.com/sennett-lau/oratype" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+        <p class="ora-req">需要 Apple Silicon（M1 或之後）。</p>
+      </div>
+
+      <div class="mac" aria-hidden="true">
+        <div class="mac-bar"><i></i><i></i><i></i><span>WhatsApp</span></div>
+        <div class="mac-body">
+          <div class="bubble bubble-in">今晚食咩好？</div>
+          <div class="bubble bubble-out" id="macBubble" hidden></div>
+          <div class="compose"><span id="macTyped"></span><span class="caret"></span></div>
+        </div>
+        <div class="pill" id="macPill">
+          <span class="pill-dot"></span>
+          <span class="pill-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="pill-lang">粵</span>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <section class="card" id="testCard" hidden>
-    <h2>自我測試（FLEURS yue 20 段）</h2>
-    <p id="testSummary" class="mono"></p>
-    <table id="testTable"><thead><tr><th>#</th><th>同 Python 一致</th><th>CER</th><th>RTF</th><th>輸出</th></tr></thead><tbody></tbody></table>
+  <!-- ============ MODELS ============ -->
+  <section class="models" id="models">
+    <div class="section-head">
+      <p class="kicker">04 · 開源生態</p>
+      <h2>一個模型，<br>幾種跑法。</h2>
+      <p class="section-sub">全部 Apache-2.0，喺 Hugging Face 免費下載。</p>
+    </div>
+    <div class="model-grid">
+      <a class="mcard mcard-star" href="https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK" target="_blank" rel="noopener">
+        <span class="mtag">1.7B · 最準</span><span class="mname">BF16 safetensors</span><span class="mmeta">4.08 GB · transformers · qwen-asr · vLLM · ComfyUI</span>
+      </a>
+      <a class="mcard" href="https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF" target="_blank" rel="noopener">
+        <span class="mtag">1.7B</span><span class="mname">GGUF</span><span class="mmeta">1.1–1.8 GB · llama.cpp · OraType</span>
+      </a>
+      <a class="mcard" href="https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-FP8" target="_blank" rel="noopener">
+        <span class="mtag">1.7B</span><span class="mname">FP8</span><span class="mmeta">2.67 GB · vLLM</span>
+      </a>
+      <a class="mcard" href="https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-NVFP4" target="_blank" rel="noopener">
+        <span class="mtag">1.7B</span><span class="mname">NVFP4</span><span class="mmeta">2.05 GB · vLLM · 最快</span>
+      </a>
+      <a class="mcard" href="https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK" target="_blank" rel="noopener">
+        <span class="mtag mtag-light">0.6B · 輕量</span><span class="mname">BF16 safetensors</span><span class="mmeta">1.56 GB · transformers · vLLM · 呢個網頁嘅來源</span>
+      </a>
+      <a class="mcard" href="https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK-GGUF" target="_blank" rel="noopener">
+        <span class="mtag mtag-light">0.6B</span><span class="mname">GGUF</span><span class="mmeta">397–639 MB · llama.cpp · 邊緣裝置</span>
+      </a>
+    </div>
   </section>
 
-  <section class="card links" id="linksCard">
-    <h2>相關項目</h2>
-    <ul class="linklist">
-      <li><a href="https://github.com/joe2643/qwen3-asr-cantonese-hk" target="_blank" rel="noopener">joe2643/qwen3-asr-cantonese-hk</a>
-        <span class="hint">港式粵語 Qwen3-ASR 微調模型：GGUF（llama.cpp）、快速上手、benchmark</span></li>
-      <li><a href="https://github.com/sennett-lau/oratype" target="_blank" rel="noopener">sennett-lau/oratype</a>
-        <span class="hint">OraType：免費開源 macOS 語音輸入，任何 app 講完就出字，可以喺本機或者自己 server 運行</span></li>
-      <li><span>Hugging Face 模型：<a href="https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK" target="_blank" rel="noopener">0.6B</a> · <a href="https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK" target="_blank" rel="noopener">1.7B</a></span></li>
-    </ul>
+  <!-- ============ FAQ ============ -->
+  <section class="faq">
+    <div class="section-head">
+      <p class="kicker">05 · 常見問題</p>
+      <h2>你可能想問</h2>
+    </div>
+    <details>
+      <summary>段聲會唔會上傳？</summary>
+      <p>唔會。模型下載落你部機，喺瀏覽器入面運行，錄音同檔案都唔會離開你部機。呢個網站唔收集任何數據。</p>
+    </details>
+    <details>
+      <summary>點解咁慢／載入咗好耐？</summary>
+      <p>第一次要下載約 1.2 GB。之後會用 cache。冇 WebGPU 嘅瀏覽器會用 CPU（WASM），會慢好多。最好用電腦版 Chrome 或 Edge；想快又準，用桌面版 1.7B 或者 OraType。</p>
+    </details>
+    <details>
+      <summary>點解唔建議用手機？</summary>
+      <p>手機瀏覽器可用嘅記憶體同 GPU 有限，載入 1.2 GB 模型好易閃退，就算載到都會好慢同發熱。用電腦試先有代表性嘅體驗。</p>
+    </details>
+    <details>
+      <summary>可唔可以加自訂詞彙（hotwords）？</summary>
+      <p>模型支援 hotword context biasing，而且唔會亂寫冇講過嘅詞（parrot rate 0%）。網頁版暫時未開放，可以用 Python／llama-server 試，詳情睇 <a href="https://github.com/joe2643/qwen3-asr-cantonese-hk" target="_blank" rel="noopener">GitHub</a>。</p>
+    </details>
   </section>
-
-  <footer class="foot">
-    模型：joe2643/Qwen3-ASR-0.6B-Cantonese-HK（int8 ONNX）· 推理：onnxruntime-web 1.31 · 唔會收集任何數據<br>
-    <a href="https://github.com/joe2643/qwen3-asr-cantonese-hk" target="_blank" rel="noopener">ASR repo</a> ·
-    <a href="https://github.com/sennett-lau/oratype" target="_blank" rel="noopener">OraType</a>
-  </footer>
 </main>
+
+<footer class="foot">
+  <div class="foot-brand"><span class="brand-mark">粵</span><span>港語 ASR</span></div>
+  <p>模型：joe2643/Qwen3-ASR-0.6B-Cantonese-HK（int8 ONNX）· 推理：onnxruntime-web 1.31 · 唔會收集任何數據</p>
+  <p class="foot-links">
+    <a href="https://github.com/joe2643/qwen3-asr-cantonese-hk" target="_blank" rel="noopener">ASR repo</a>
+    <a href="https://huggingface.co/joe2643" target="_blank" rel="noopener">Hugging Face</a>
+    <a href="https://github.com/sennett-lau/oratype" target="_blank" rel="noopener">OraType</a>
+    <a href="https://buymeacoffee.com/joe2643" target="_blank" rel="noopener">🍋 請飲檸茶</a>
+  </p>
+</footer>
+
 <script type="module" src="app.js"></script>
 </body>
 </html>
