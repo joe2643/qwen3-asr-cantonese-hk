@@ -245,7 +245,7 @@ else if (device.mobile) { $("oraYou").hidden = false; $("oraYou").textContent = 
 
 // reveal on scroll (+ grow chart bars)
 {
-  const els = document.querySelectorAll(".section-head, .chart, .paths, .ora-inner, .model-grid, .faq details");
+  const els = document.querySelectorAll(".section-head, .compare, .pillars, .chart, .paths, .ora-inner, .model-grid, .faq details");
   const grow = (root) => root.querySelectorAll(".b").forEach((b) => (b.style.width = b.dataset.w + "%"));
   if (!("IntersectionObserver" in window)) { grow(document); }
   else {

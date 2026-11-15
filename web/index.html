@@ -24,6 +24,7 @@
     <span class="brand-name">港語 ASR</span>
   </a>
   <nav class="nav-links">
+    <a href="#why">港式</a>
     <a href="#demo">試用</a>
     <a href="#accuracy">準確度</a>
     <a href="#oratype">Mac App</a>
@@ -37,9 +38,9 @@
   <!-- ============ HERO ============ -->
   <section class="hero">
     <div class="hero-copy">
-      <p class="eyebrow"><span class="dot"></span>開源 · 港式粵語微調 · 中英夾雜</p>
+      <p class="eyebrow"><span class="dot"></span>開源 · 香港廣東話 · 繁體 · 中英夾雜</p>
       <h1>講廣東話，<br><em>即刻</em>變文字。</h1>
-      <p class="lede">用你把聲試吓我哋嘅港式粵語語音模型。寫出嚟係香港人真係會用嘅字：<span class="kw">係</span><span class="kw">喺</span><span class="kw">嘅</span><span class="kw">咗</span><span class="kw">㗎</span>，英文照寫英文。</p>
+      <p class="lede">唔係泛泛嘅「粵語」，係<b>香港人日常講嘅廣東話</b>。出嚟係繁體字、係香港人真係會打嘅口語：<span class="kw">係</span><span class="kw">喺</span><span class="kw">嘅</span><span class="kw">咗</span><span class="kw">㗎</span>，英文照寫英文。</p>
       <ul class="hero-points">
         <li><b>全程本機運行</b>　段聲唔會上傳，唔使註冊</li>
         <li><b>WebGPU 加速</b>　建議用電腦版 Chrome / Edge</li>
@@ -67,10 +68,43 @@
     </figure>
   </section>
 
+  <!-- ============ WHY HK ============ -->
+  <section class="whyhk" id="why">
+    <div class="section-head">
+      <p class="kicker">01 · 點解要「港式」</p>
+      <h2>唔係「粵語」就算，<br>係<span class="hl">香港人講嘅</span>廣東話。</h2>
+      <p class="section-sub">好多語音模型都話識「粵語」，但唔係為香港人而整：口音同用詞唔同，出簡體字，又或者自動將你講嘅口語「翻譯」做書面語，英文字就變成音譯。呢套模型專登為香港人平時點講嘢而調校。</p>
+    </div>
+
+    <div class="compare">
+      <p class="compare-said"><span class="compare-k">你講</span><span class="compare-audio" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>「我啱啱 book 咗聽晚七點嘅枱，你收工直接過嚟啦。」</p>
+      <div class="compare-grid">
+        <div class="cmp cmp-bad">
+          <p class="cmp-h"><span class="cmp-x">✕</span>一般「粵語」模型常見輸出</p>
+          <p class="cmp-text">我<u title="簡體字">刚刚</u><u title="英文變音譯">布克</u><u title="書面語">了</u><u title="簡體字＋書面語">明晚七点的</u>台，你<u title="書面語">下班</u>直接<u title="簡體字＋書面語">过来吧</u>。</p>
+          <ul class="cmp-tags"><li>簡體字</li><li>變咗書面語</li><li>英文變音譯</li></ul>
+        </div>
+        <div class="cmp cmp-good">
+          <p class="cmp-h"><span class="cmp-o">✓</span>港語 ASR</p>
+          <p class="cmp-text">我<mark>啱啱</mark> <mark>book</mark> <mark>咗</mark><mark>聽晚</mark>七點<mark>嘅</mark>枱，你<mark>收工</mark>直接<mark>過嚟啦</mark>。</p>
+          <ul class="cmp-tags"><li>繁體</li><li>口語照寫</li><li>英文照寫英文</li></ul>
+        </div>
+      </div>
+      <p class="compare-foot">示例，用嚟說明常見問題；實際輸出視乎模型同錄音質素。</p>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar"><span class="pillar-n">繁</span><h3>繁體 · 香港寫法</h3><p>直接出香港用嘅繁體字，唔會出簡體，唔使再轉換。</p></div>
+      <div class="pillar"><span class="pillar-n">嘅</span><h3>口語照寫</h3><p>係、喺、嘅、咗、㗎、啲，講乜寫乜，唔會幫你改做書面語。</p></div>
+      <div class="pillar"><span class="pillar-n">En</span><h3>中英夾雜</h3><p>book 枱、send email、deadline，英文照寫英文。中英夾雜測試集錯字少一半以上（1.7B：11.74% → 5.52%）。</p></div>
+      <div class="pillar"><span class="pillar-n">港</span><h3>香港口音同用詞</h3><p>Common Voice 香港、MDCC、立法會等香港測試集，錯字率全部低過原版模型。</p></div>
+    </div>
+  </section>
+
   <!-- ============ DEMO ============ -->
   <section class="demo" id="demo">
     <div class="section-head">
-      <p class="kicker">01 · 線上試用</p>
+      <p class="kicker">02 · 線上試用</p>
       <h2>喺瀏覽器試 <span class="hl">0.6B</span></h2>
       <p class="section-sub">第一次要下載約 1.2 GB 模型，之後會存喺瀏覽器 cache。網頁版係試食裝：細模型、int8 量化，速度同準確度都唔及桌面版。</p>
     </div>
@@ -180,7 +214,7 @@
   <!-- ============ ACCURACY ============ -->
   <section class="accuracy" id="accuracy">
     <div class="section-head">
-      <p class="kicker">02 · 想再準啲</p>
+      <p class="kicker">03 · 想再準啲</p>
       <h2>網頁係試食，<br>正餐係 <span class="hl">1.7B</span>。</h2>
       <p class="section-sub">0.6B 細、快，啱放上網頁同邊緣裝置。要日常用、要準，用 1.7B：體積大約三倍，大部分測試集錯字少兩至三成，中英夾雜都穩陣啲。</p>
     </div>
@@ -221,7 +255,7 @@
   <section class="oratype" id="oratype">
     <div class="ora-inner">
       <div class="ora-copy">
-        <p class="kicker kicker-light">03 · Mac 用家</p>
+        <p class="kicker kicker-light">04 · Mac 用家</p>
         <h2>唔好淨係試，<br><em>日日用</em>佢。</h2>
         <p class="ora-lede"><b>OraType</b> 係免費開源嘅 macOS 語音輸入。喺任何 app 撳快捷鍵、講嘢，乾淨嘅文字就會打喺你個 cursor 度。內置我哋嘅 <b>1.7B 港式粵語模型</b>，全程喺你部 Mac 運行。</p>
         <p class="ora-you" id="oraYou" hidden></p>
@@ -259,7 +293,7 @@
   <!-- ============ MODELS ============ -->
   <section class="models" id="models">
     <div class="section-head">
-      <p class="kicker">04 · 開源生態</p>
+      <p class="kicker">05 · 開源生態</p>
       <h2>一個模型，<br>幾種跑法。</h2>
       <p class="section-sub">全部 Apache-2.0，喺 Hugging Face 免費下載。</p>
     </div>
@@ -288,9 +322,13 @@
   <!-- ============ FAQ ============ -->
   <section class="faq">
     <div class="section-head">
-      <p class="kicker">05 · 常見問題</p>
+      <p class="kicker">06 · 常見問題</p>
       <h2>你可能想問</h2>
     </div>
+    <details>
+      <summary>同其他「粵語」語音識別有咩唔同？</summary>
+      <p>好多模型將「粵語」當成一種書面中文嚟處理：出簡體字、將口語改寫做書面語，或者用其他地區嘅口音同用詞訓練。呢套模型專登為香港廣東話調校：出繁體字、保留口語寫法、英文照寫英文，喺香港相關測試集嘅錯字率都低過原版 Qwen3-ASR。</p>
+    </details>
     <details>
       <summary>段聲會唔會上傳？</summary>
       <p>唔會。模型下載落你部機，喺瀏覽器入面運行，錄音同檔案都唔會離開你部機。呢個網站唔收集任何數據。</p>
