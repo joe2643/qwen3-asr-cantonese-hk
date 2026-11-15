@@ -1,0 +1,17 @@
+// Cloudflare Worker for https://hkasr.joe2643.work
+// Static assets come from ../dist (run ../build.sh first); /models/* and /ort/*.wasm are streamed from R2 by worker.js.
+// The account id is not stored here: set CLOUDFLARE_ACCOUNT_ID (and CLOUDFLARE_API_TOKEN) in the environment.
+{
+  "name": "hkasr",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "../dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/models/*", "/ort/*.wasm"]
+  },
+  "r2_buckets": [{ "binding": "MODELS", "bucket_name": "hkasr-models" }],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "hkasr.joe2643.work", "custom_domain": true }]
+}

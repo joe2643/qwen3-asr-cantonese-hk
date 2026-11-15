@@ -1,0 +1,10 @@
+{
+ "models": [
+  {
+   "id": "yue-0.6b-int8",
+   "label": "粵語 0.6B（int8，約 1.17 GB）",
+   "dir": "models/yue-0.6b-int8/",
+   "default": true
+  }
+ ]
+}
