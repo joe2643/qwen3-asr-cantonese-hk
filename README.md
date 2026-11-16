@@ -1,6 +1,7 @@
 # Qwen3-ASR Cantonese (Hong Kong)
 
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-blue)](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF)
+[![Live demo](https://img.shields.io/badge/Live%20demo-hkasr.joe2643.work-orange)](https://hkasr.joe2643.work)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Buy Me a Lemon Tea](https://img.shields.io/badge/%F0%9F%8D%8B%20Buy%20Me%20a%20Lemon%20Tea-ffdd00)](https://buymeacoffee.com/joe2643)
 
@@ -12,6 +13,12 @@ Mainland-style output of the stock model.
 
 - **1.7B (v2.1)**: the most accurate. Use it on a desktop or server; v2.1 also supports short voice commands (`閂燈`, `開燈`, `閂冷氣`) and hotword context biasing without prompt parroting.
 - **0.6B**: about one-third the size. Also trained on short voice commands and hotword context biasing for lightweight / edge deployment.
+
+## Try it in your browser
+
+**[hkasr.joe2643.work](https://hkasr.joe2643.work)** runs the 0.6B model (int8 ONNX, about 1.16 GB, cached after the
+first load) entirely in the browser with WebGPU, falling back to WASM. Pick or drop an audio file, or record from the
+microphone; no audio leaves the device. Source, local dev server and deploy setup are in [`web/`](web/README.md).
 
 ## Available weights & quantizations
 
