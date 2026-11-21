@@ -1,6 +1,13 @@
+<a href="https://koelony.com">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/koelony-lockup-inverse.svg">
+    <img src="assets/koelony-lockup.svg" alt="Koelony" height="56">
+  </picture>
+</a>
+
 # Qwen3-ASR Cantonese (Hong Kong)
 
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-blue)](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-blue)](https://huggingface.co/koelony)
 [![Live demo](https://img.shields.io/badge/Live%20demo-hkasr.joe2643.work-orange)](https://hkasr.joe2643.work)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Buy Me a Lemon Tea](https://img.shields.io/badge/%F0%9F%8D%8B%20Buy%20Me%20a%20Lemon%20Tea-ffdd00)](https://buymeacoffee.com/joe2643)
@@ -14,6 +21,10 @@ Mainland-style output of the stock model.
 - **1.7B (v2.1)**: the most accurate. Use it on a desktop or server; v2.1 also supports short voice commands (`閂燈`, `開燈`, `閂冷氣`) and hotword context biasing without prompt parroting.
 - **0.6B**: about one-third the size. Also trained on short voice commands and hotword context biasing for lightweight / edge deployment.
 
+Part of [Koelony](https://koelony.com), open-source models for Hong Kong Cantonese. Model page:
+[koelony.com/asr](https://koelony.com/asr/). Code: [github.com/koelony](https://github.com/koelony). Weights:
+[huggingface.co/koelony](https://huggingface.co/koelony).
+
 ## Try it in your browser
 
 **[hkasr.joe2643.work](https://hkasr.joe2643.work)** runs the 0.6B model (int8 ONNX, about 1.16 GB, cached after the
@@ -24,12 +35,12 @@ microphone; no audio leaves the device. Source, local dev server and deploy setu
 
 | Hugging Face repo | Format | Size | Runtime / target |
 |---|---|---:|---|
-| [`joe2643/Qwen3-ASR-1.7B-Cantonese-HK`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK) | BF16 (`safetensors`) + `comfyui/` single-file | 4.08 GB | `transformers`, `qwen-asr`, vLLM, [ComfyUI-Drama3](https://github.com/PedroMarinhoDev/ComfyUI-Drama3) |
-| [`joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF) | GGUF `Q4_K_M` / `Q6_K` / `Q8_0` + `mmproj-Q8_0` | 1.1–1.8 GB + 356 MB | `llama.cpp` (`llama-server`), [OraType](https://github.com/sennett-lau/oratype) |
-| [`joe2643/Qwen3-ASR-1.7B-Cantonese-HK-FP8`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-FP8) | FP8 W8A8 (`compressed-tensors`) | 2.67 GB | vLLM (`FP8_DYNAMIC`, larger KV-cache headroom) |
-| [`joe2643/Qwen3-ASR-1.7B-Cantonese-HK-NVFP4`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-NVFP4) | NVFP4A16 (`compressed-tensors`) | 2.05 GB | vLLM (fastest GPU throughput, smallest VRAM) |
-| [`joe2643/Qwen3-ASR-0.6B-Cantonese-HK`](https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK) | 0.6B BF16 (`safetensors`) | 1.56 GB | `transformers`, `qwen-asr`, vLLM |
-| [`joe2643/Qwen3-ASR-0.6B-Cantonese-HK-GGUF`](https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK-GGUF) | 0.6B GGUF `Q4_K_M` / `Q6_K` / `Q8_0` + `mmproj-Q8_0` | 397–639 MB + 214 MB | `llama.cpp` (`llama-server`), edge devices |
+| [`koelony/Qwen3-ASR-1.7B-Cantonese-HK`](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK) | BF16 (`safetensors`) + `comfyui/` single-file | 4.08 GB | `transformers`, `qwen-asr`, vLLM, [ComfyUI-Drama3](https://github.com/PedroMarinhoDev/ComfyUI-Drama3) |
+| [`koelony/Qwen3-ASR-1.7B-Cantonese-HK-GGUF`](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK-GGUF) | GGUF `Q4_K_M` / `Q6_K` / `Q8_0` + `mmproj-Q8_0` | 1.1–1.8 GB + 356 MB | `llama.cpp` (`llama-server`), [OraType](https://github.com/sennett-lau/oratype) |
+| [`koelony/Qwen3-ASR-1.7B-Cantonese-HK-FP8`](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK-FP8) | FP8 W8A8 (`compressed-tensors`) | 2.67 GB | vLLM (`FP8_DYNAMIC`, larger KV-cache headroom) |
+| [`koelony/Qwen3-ASR-1.7B-Cantonese-HK-NVFP4`](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK-NVFP4) | NVFP4A16 (`compressed-tensors`) | 2.05 GB | vLLM (fastest GPU throughput, smallest VRAM) |
+| [`koelony/Qwen3-ASR-0.6B-Cantonese-HK`](https://huggingface.co/koelony/Qwen3-ASR-0.6B-Cantonese-HK) | 0.6B BF16 (`safetensors`) | 1.56 GB | `transformers`, `qwen-asr`, vLLM |
+| [`koelony/Qwen3-ASR-0.6B-Cantonese-HK-GGUF`](https://huggingface.co/koelony/Qwen3-ASR-0.6B-Cantonese-HK-GGUF) | 0.6B GGUF `Q4_K_M` / `Q6_K` / `Q8_0` + `mmproj-Q8_0` | 397–639 MB + 214 MB | `llama.cpp` (`llama-server`), edge devices |
 
 ## Benchmark
 
@@ -92,7 +103,7 @@ Hotword context, 210-clip stress suite. Parrot rate is how often the model write
 You need a `llama.cpp` build with Qwen3-ASR audio support (tested with commit `78ffbaa`, 2026-11-10).
 
 ```sh
-hf download joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF \
+hf download koelony/Qwen3-ASR-1.7B-Cantonese-HK-GGUF \
   Qwen3-ASR-1.7B-Cantonese-HK.Q4_K_M.gguf Qwen3-ASR-1.7B-Cantonese-HK.mmproj-Q8_0.gguf --local-dir models
 
 llama-server \
@@ -126,9 +137,9 @@ On a Ryzen AI Max+ 395 with a CPU-only build, `Q4_K_M` takes about 0.45 s for a 
 | `Qwen3-ASR-1.7B-Cantonese-HK-Q8_0.gguf` | 1.8 GB | largest |
 | `Qwen3-ASR-1.7B-Cantonese-HK.mmproj-Q8_0.gguf` | 356 MB | audio encoder, required with any GGUF above |
 
-SHA-256 values are in the [GGUF model card](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF).
+SHA-256 values are in the [GGUF model card](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK-GGUF).
 
-For the 0.6B model, download from `joe2643/Qwen3-ASR-0.6B-Cantonese-HK-GGUF` and replace `1.7B` with `0.6B` in the
+For the 0.6B model, download from `koelony/Qwen3-ASR-0.6B-Cantonese-HK-GGUF` and replace `1.7B` with `0.6B` in the
 file names. `Q4_K_M` with its `mmproj` is about 611 MB in total.
 
 | File | Size | Use |
@@ -138,7 +149,7 @@ file names. `Q4_K_M` with its `mmproj` is about 611 MB in total.
 | `Qwen3-ASR-0.6B-Cantonese-HK-Q8_0.gguf` | 639 MB | largest |
 | `Qwen3-ASR-0.6B-Cantonese-HK.mmproj-Q8_0.gguf` | 214 MB | audio encoder, required with any 0.6B GGUF above |
 
-SHA-256 values are in the [0.6B GGUF model card](https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK-GGUF).
+SHA-256 values are in the [0.6B GGUF model card](https://huggingface.co/koelony/Qwen3-ASR-0.6B-Cantonese-HK-GGUF).
 
 #### Hotwords (1.7B v2.1 & 0.6B)
 
@@ -163,7 +174,7 @@ import torch
 from qwen_asr import Qwen3ASRModel  # pip install qwen-asr
 
 asr = Qwen3ASRModel.from_pretrained(
-    "joe2643/Qwen3-ASR-1.7B-Cantonese-HK",
+    "koelony/Qwen3-ASR-1.7B-Cantonese-HK",
     dtype=torch.bfloat16,
     device_map="cuda:0",
     max_new_tokens=256,
@@ -171,7 +182,7 @@ asr = Qwen3ASRModel.from_pretrained(
 print(asr.transcribe(audio="sample.wav", language="Cantonese")[0].text)
 ```
 
-For the 0.6B model, use `"joe2643/Qwen3-ASR-0.6B-Cantonese-HK"`. Both 1.7B (v2.1) and 0.6B accept hotwords via `context`:
+For the 0.6B model, use `"koelony/Qwen3-ASR-0.6B-Cantonese-HK"`. Both 1.7B (v2.1) and 0.6B accept hotwords via `context`:
 
 ```python
 print(asr.transcribe(audio="command.wav", language="Cantonese", context="閂燈, 開燈, 閂冷氣, 較細聲啲")[0].text)
@@ -183,7 +194,7 @@ print(asr.transcribe(audio="command.wav", language="Cantonese", context="閂燈,
 from qwen_asr import Qwen3ASRModel  # pip install "qwen-asr[vllm]==0.0.6"
 
 asr = Qwen3ASRModel.LLM(
-    model="joe2643/Qwen3-ASR-1.7B-Cantonese-HK-NVFP4",  # or -FP8 / BF16 repo
+    model="koelony/Qwen3-ASR-1.7B-Cantonese-HK-NVFP4",  # or -FP8 / BF16 repo
     gpu_memory_utilization=0.5,
     max_model_len=4096,
     max_new_tokens=256,
@@ -194,7 +205,7 @@ print(asr.transcribe(audio="sample.wav", language="Cantonese")[0].text)
 ### ComfyUI ([ComfyUI-Drama3](https://github.com/PedroMarinhoDev/ComfyUI-Drama3))
 
 ```sh
-hf download joe2643/Qwen3-ASR-1.7B-Cantonese-HK \
+hf download koelony/Qwen3-ASR-1.7B-Cantonese-HK \
   comfyui/qwen3_asr_1.7b_cantonese_hk_bf16.safetensors --local-dir ComfyUI/models/asr
 ```
 
@@ -215,8 +226,8 @@ normalise numbers, so sets whose references contain digits score a little higher
 | Version | Date | BF16 revision | GGUF revision | FP8 / NVFP4 |
 |---|---|---|---|---|
 | **v2.1 (current)** | 2026-11-14 | `main` | `main` | — |
-| v2 | 2026-11-10 | [`5c1df898`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK/tree/5c1df898) | [`b1c3dc91`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF/tree/b1c3dc91) | `main` |
-| v1 | 2026-11-07 | [`399c5ef`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK/tree/399c5ef) | [`1afe540`](https://huggingface.co/joe2643/Qwen3-ASR-1.7B-Cantonese-HK-GGUF/tree/1afe540def044173f7412dc72584f803b92bfa96) | — |
+| v2 | 2026-11-10 | [`5c1df898`](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK/tree/5c1df898) | [`b1c3dc91`](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK-GGUF/tree/b1c3dc91) | `main` |
+| v1 | 2026-11-07 | [`399c5ef`](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK/tree/399c5ef) | [`1afe540`](https://huggingface.co/koelony/Qwen3-ASR-1.7B-Cantonese-HK-GGUF/tree/1afe540def044173f7412dc72584f803b92bfa96) | — |
 
 v2.1 adds context / hotword vocabulary alignment on top of v2 (`21.88% -> 7.19%` CER on short commands with long glossaries, `0.0%` parroting) and includes updated BF16, `comfyui/` single-file, and GGUF (`Q4_K_M`, `Q6_K`, `Q8_0`, `mmproj-Q8_0`) weights. Pin the revision above if you need v2 or v1.
 

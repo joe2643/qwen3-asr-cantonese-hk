@@ -11,8 +11,10 @@ mkdir -p ort
 cp -p "$ORT/ort.webgpu.min.mjs" "$ORT/ort-wasm-simd-threaded.asyncify.mjs" "$ORT/ort-wasm-simd-threaded.asyncify.wasm" ort/
 
 out=dist
-mkdir -p "$out/ort" "$out/test/wav"
-cp -p index.html style.css app.js asr-worker.js hkasr-lib.js models.json _headers "$out/"
+mkdir -p "$out/ort" "$out/test/wav" "$out/fonts"
+cp -p index.html style.css app.js asr-worker.js hkasr-lib.js models.json _headers favicon.svg "$out/"
+# Koelony display face and logo, same-origin because the page is cross-origin isolated (COEP)
+cp -p fonts/*.woff2 fonts/OFL.txt "$out/fonts/"
 cp -p "$ORT/ort.webgpu.min.mjs" "$ORT/ort-wasm-simd-threaded.asyncify.mjs" "$out/ort/"
 cp -p test/manifest.json test/mel_ref_00.bin "$out/test/"
 cp -p test/wav/*.wav "$out/test/wav/"

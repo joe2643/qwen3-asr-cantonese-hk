@@ -218,13 +218,13 @@ $("mobileAnywayBtn").onclick = () => { mobileAck = true; $("mobileNotice").hidde
 $("shareLinkBtn").onclick = async () => {
   const url = location.origin + location.pathname;
   try {
-    if (navigator.share) { await navigator.share({ title: "港語 ASR：廣東話語音轉文字", text: "用電腦開嚟試：", url }); return; }
+    if (navigator.share) { await navigator.share({ title: "Koelony：廣東話語音轉文字", text: "用電腦開嚟試：", url }); return; }
     await navigator.clipboard.writeText(url); flash($("shareLinkBtn"), "已複製網址 ✓");
   } catch (e) { if (e?.name !== "AbortError") flash($("shareLinkBtn"), url); }
 };
 
-if (device.mac) { $("oraYou").hidden = false; $("oraYou").textContent = "● 你用緊 Mac：可以即刻裝嚟用"; }
-else if (device.mobile) { $("oraYou").hidden = false; $("oraYou").textContent = "● 返到 Mac 再開呢頁就裝得"; }
+if (device.mac) { $("oraYou").hidden = false; $("oraYou").textContent = "你用緊 Mac：可以即刻裝嚟用"; }
+else if (device.mobile) { $("oraYou").hidden = false; $("oraYou").textContent = "返到 Mac 再開呢頁就裝得"; }
 
 // accuracy chart: 0.6B fine-tune vs 1.7B v2.1 (CER %, from the repo README)
 {
@@ -243,16 +243,16 @@ else if (device.mobile) { $("oraYou").hidden = false; $("oraYou").textContent = 
   }
 }
 
-// reveal on scroll (+ grow chart bars)
+// grow the chart bars when the chart scrolls into view (sections themselves do not animate)
 {
-  const els = document.querySelectorAll(".section-head, .compare, .pillars, .chart, .paths, .ora-inner, .model-grid, .faq details");
+  const els = document.querySelectorAll(".chart");
   const grow = (root) => root.querySelectorAll(".b").forEach((b) => (b.style.width = b.dataset.w + "%"));
   if (!("IntersectionObserver" in window)) { grow(document); }
   else {
     const io = new IntersectionObserver((es) => es.forEach((e) => {
-      if (!e.isIntersecting) return; e.target.classList.add("in"); grow(e.target); io.unobserve(e.target);
+      if (!e.isIntersecting) return; grow(e.target); io.unobserve(e.target);
     }), { threshold: 0.15 });
-    els.forEach((el) => { el.classList.add("reveal"); io.observe(el); });
+    els.forEach((el) => io.observe(el));
   }
 }
 

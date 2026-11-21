@@ -32,7 +32,7 @@ jobs:
       - name: Node test (log-mel, tokenizer decode, chunking)
         run: |
           curl -sfL --retry 3 -o test/model-small/vocab.json \
-            https://huggingface.co/joe2643/Qwen3-ASR-0.6B-Cantonese-HK/resolve/main/vocab.json
+            https://huggingface.co/koelony/Qwen3-ASR-0.6B-Cantonese-HK/resolve/main/vocab.json
           node test/node_libtest.mjs | tee "$RUNNER_TEMP/libtest.txt"
           grep -q "tokenizer decode match 20 / 20" "$RUNNER_TEMP/libtest.txt"
           python3 - "$RUNNER_TEMP/libtest.txt" <<'PY'
