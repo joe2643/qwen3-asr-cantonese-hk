@@ -8,7 +8,7 @@
 # Qwen3-ASR Cantonese (Hong Kong)
 
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-blue)](https://huggingface.co/koelony)
-[![Live demo](https://img.shields.io/badge/Live%20demo-hkasr.joe2643.work-orange)](https://hkasr.joe2643.work)
+[![Live demo](https://img.shields.io/badge/Live%20demo-demo.koelony.com-d0201a)](https://demo.koelony.com)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Buy Me a Lemon Tea](https://img.shields.io/badge/%F0%9F%8D%8B%20Buy%20Me%20a%20Lemon%20Tea-ffdd00)](https://buymeacoffee.com/joe2643)
 
@@ -27,7 +27,7 @@ Part of [Koelony](https://koelony.com), open-source models for Hong Kong Cantone
 
 ## Try it in your browser
 
-**[hkasr.joe2643.work](https://hkasr.joe2643.work)** runs the 0.6B model (int8 ONNX, about 1.16 GB, cached after the
+**[demo.koelony.com](https://demo.koelony.com)** runs the 0.6B model (int8 ONNX, about 1.16 GB, cached after the
 first load) entirely in the browser with WebGPU, falling back to WASM. Pick or drop an audio file, or record from the
 microphone; no audio leaves the device. Source, local dev server and deploy setup are in [`web/`](web/README.md).
 

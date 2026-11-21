@@ -1,6 +1,6 @@
 # Web demo: Cantonese ASR in the browser
 
-Live: https://hkasr.joe2643.work
+Live: https://demo.koelony.com
 
 Runs [koelony/Qwen3-ASR-0.6B-Cantonese-HK](https://huggingface.co/koelony/Qwen3-ASR-0.6B-Cantonese-HK) fully in the browser
 (int8 ONNX, about 1.16 GB, cached with the Cache API after the first load). Inference uses
@@ -25,7 +25,7 @@ Runs [koelony/Qwen3-ASR-0.6B-Cantonese-HK](https://huggingface.co/koelony/Qwen3-
 cd web
 npm ci
 ./build.sh                                   # copies the ORT runtime into ./ort and builds ./dist
-python3 serve.py 18096 --remote https://hkasr.joe2643.work
+python3 serve.py 18096 --remote https://demo.koelony.com
 # open http://127.0.0.1:18096/
 ```
 
@@ -42,9 +42,17 @@ node test/node_libtest.mjs     # expect: mel maxdiff ~2e-5, tokenizer decode mat
 ## CI / deploy
 
 `.github/workflows/web.yml`: every PR and push that touches `web/` runs `npm ci`, `build.sh`, `node --check` and the Node test.
-A push to `main` then deploys `dist/` + `deploy/worker.js` with `wrangler deploy -c deploy/wrangler.jsonc`.
-The deploy job uses the `production` environment, so it waits for a maintainer to approve it.
-Model files in R2 are never touched by CI.
+A push to `main` then deploys `dist/` + `deploy/worker.js` to **demo.koelony.com** (Worker `koelony-demo` on
+Koelony's Cloudflare account) with `wrangler deploy -c deploy/wrangler.jsonc`. The deploy job uses the `production`
+environment, so it waits for a maintainer to approve it; its `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` are
+Koelony's.
+
+Where the big files come from (Workers static assets allow 25 MiB a file, and the page must stay cross-origin isolated,
+so `deploy/worker.js` serves both from this origin):
+- `/models/*`: the `koelony-demo-models` Worker through a service binding: the model cut into 24 MiB parts. CI never
+  touches it; see [`deploy/models/README.md`](deploy/models/README.md) to rebuild it.
+- `/ort/*.wasm`: onnxruntime-web from jsDelivr at `ORT_VERSION` in `deploy/wrangler.jsonc`; `build.sh` fails if that
+  differs from the installed onnxruntime-web.
 
 Notes:
 - Outside localhost the page must be served over HTTPS (WebGPU and the Cache API need a secure context).

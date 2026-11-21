@@ -2,7 +2,7 @@
 """Local static server for the web demo, with cross-origin isolation (needed for multi-threaded WASM).
 
 Usage:
-    python3 serve.py [port] [--remote https://hkasr.joe2643.work]
+    python3 serve.py [port] [--remote https://demo.koelony.com]
 
 With --remote, any /models/* or /ort/*.wasm file that is missing locally is streamed from that site,
 so you can work on the UI without building the ONNX model package yourself.

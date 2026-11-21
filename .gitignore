@@ -4,3 +4,4 @@ __pycache__/
 models/
 *.gguf
 hyp.jsonl
+!web/deploy/models/
