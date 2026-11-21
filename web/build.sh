@@ -6,13 +6,20 @@ cd "$(dirname "$0")"
 ORT=node_modules/onnxruntime-web/dist
 [ -f "$ORT/ort.webgpu.min.mjs" ] || { echo "run npm ci first" >&2; exit 1; }
 
+# deploy/worker.js streams the ORT .wasm from jsDelivr at ORT_VERSION: it must be the version installed here.
+want=$(sed -n 's/.*"ORT_VERSION": *"\([^"]*\)".*/\1/p' deploy/wrangler.jsonc)
+have=$(node -p "require('./node_modules/onnxruntime-web/package.json').version")
+[ "$want" = "$have" ] || { echo "deploy/wrangler.jsonc ORT_VERSION=$want but onnxruntime-web is $have" >&2; exit 1; }
+
 # local dev copy of the ORT runtime (serve.py serves ./ort)
 mkdir -p ort
 cp -p "$ORT/ort.webgpu.min.mjs" "$ORT/ort-wasm-simd-threaded.asyncify.mjs" "$ORT/ort-wasm-simd-threaded.asyncify.wasm" ort/
 
 out=dist
-mkdir -p "$out/ort" "$out/test/wav"
-cp -p index.html style.css app.js asr-worker.js hkasr-lib.js models.json _headers "$out/"
+mkdir -p "$out/ort" "$out/test/wav" "$out/fonts"
+cp -p index.html style.css app.js asr-worker.js hkasr-lib.js models.json _headers favicon.svg "$out/"
+# Koelony display face and logo, same-origin because the page is cross-origin isolated (COEP)
+cp -p fonts/*.woff2 fonts/OFL.txt "$out/fonts/"
 cp -p "$ORT/ort.webgpu.min.mjs" "$ORT/ort-wasm-simd-threaded.asyncify.mjs" "$out/ort/"
 cp -p test/manifest.json test/mel_ref_00.bin "$out/test/"
 cp -p test/wav/*.wav "$out/test/wav/"

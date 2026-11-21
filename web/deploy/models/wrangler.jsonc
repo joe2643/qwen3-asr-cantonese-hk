@@ -1,0 +1,10 @@
+// The demo's model files, as Workers static assets (no R2 needed): every part is under the 25 MiB
+// a-file limit. Not public on its own (no route, no workers.dev): demo.koelony.com reaches it through
+// a service binding. Build ./dist with split.mjs, then deploy by hand; see README.md.
+{
+  "name": "koelony-demo-models",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./dist" },
+  "workers_dev": false,
+  "preview_urls": false
+}
