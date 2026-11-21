@@ -53,7 +53,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: production
-      url: https://hkasr.joe2643.work
+      url: https://demo.koelony.com
     concurrency:
       group: deploy-production
       cancel-in-progress: false
@@ -76,7 +76,7 @@ jobs:
         # Cloudflare bot protection may challenge runner IPs; a 403 here is only a warning.
         run: |
           sleep 5
-          h=$(curl -sI -A hkasr-ci https://hkasr.joe2643.work/)
+          h=$(curl -sI -A koelony-demo-ci https://demo.koelony.com/)
           echo "$h" | head -1
           if echo "$h" | head -1 | grep -q " 200"; then
             echo "$h" | grep -qi "cross-origin-embedder-policy: require-corp" || { echo "COEP header missing"; exit 1; }

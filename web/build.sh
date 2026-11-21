@@ -6,6 +6,11 @@ cd "$(dirname "$0")"
 ORT=node_modules/onnxruntime-web/dist
 [ -f "$ORT/ort.webgpu.min.mjs" ] || { echo "run npm ci first" >&2; exit 1; }
 
+# deploy/worker.js streams the ORT .wasm from jsDelivr at ORT_VERSION: it must be the version installed here.
+want=$(sed -n 's/.*"ORT_VERSION": *"\([^"]*\)".*/\1/p' deploy/wrangler.jsonc)
+have=$(node -p "require('./node_modules/onnxruntime-web/package.json').version")
+[ "$want" = "$have" ] || { echo "deploy/wrangler.jsonc ORT_VERSION=$want but onnxruntime-web is $have" >&2; exit 1; }
+
 # local dev copy of the ORT runtime (serve.py serves ./ort)
 mkdir -p ort
 cp -p "$ORT/ort.webgpu.min.mjs" "$ORT/ort-wasm-simd-threaded.asyncify.mjs" "$ORT/ort-wasm-simd-threaded.asyncify.wasm" ort/

@@ -1,8 +1,9 @@
-// Cloudflare Worker for https://hkasr.joe2643.work
-// Static assets come from ../dist (run ../build.sh first); /models/* and /ort/*.wasm are streamed from R2 by worker.js.
+// Cloudflare Worker for https://demo.koelony.com (Koelony's Cloudflare account).
+// Static assets come from ../dist (run ../build.sh first). /models/* is served by the koelony-demo-models
+// Worker (see models/), /ort/*.wasm from jsDelivr at ORT_VERSION; worker.js keeps both same-origin.
 // The account id is not stored here: set CLOUDFLARE_ACCOUNT_ID (and CLOUDFLARE_API_TOKEN) in the environment.
 {
-  "name": "hkasr",
+  "name": "koelony-demo",
   "main": "worker.js",
   "compatibility_date": "2026-10-01",
   "assets": {
@@ -10,8 +11,12 @@
     "binding": "ASSETS",
     "run_worker_first": ["/models/*", "/ort/*.wasm"]
   },
-  "r2_buckets": [{ "binding": "MODELS", "bucket_name": "hkasr-models" }],
+  "services": [{ "binding": "MODELS", "service": "koelony-demo-models" }],
+  "vars": {
+    // Must match node_modules/onnxruntime-web (build.sh fails if it does not).
+    "ORT_VERSION": "1.31.1"
+  },
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [{ "pattern": "hkasr.joe2643.work", "custom_domain": true }]
+  "routes": [{ "pattern": "demo.koelony.com", "custom_domain": true }]
 }
